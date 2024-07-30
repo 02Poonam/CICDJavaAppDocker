@@ -1,11 +1,5 @@
 pipeline {
     agent any
-    
-    environment {
-        DOCKER_CREDENTIALS_ID = 'poonam02' // Jenkins credentials ID for DockerHub
-        DOCKER_IMAGE = 'poonam02/java-app-docker:latest'
-    }
-
     stages {
         stage('Clone Repository') {
             steps {
@@ -14,13 +8,21 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t poonam02/java-app-docker .'
-            }
+                // sh 'docker build -t yaksh0212/java-app .'
+                script{
+                    docker.withRegistry('poonam02',Docker_credentials){
+                        def customImage = docker.build("poonam02/java-app-docker .")
+                        customImage.push()
+                    }
+                }
+           }
         }
         stage('Push Docker Image') {
             steps {
-                sh 'docker login'
-                sh 'docker push poonam02/java-app-docker'
+                withCredentials([usernamePassword(credentialsId: 'Docker_credential')]) {
+                    sh ' docker login'
+                    sh ' docker push poonam02/java-app-docker'
+                }
             }
         }
         stage('Deploy Container') {
