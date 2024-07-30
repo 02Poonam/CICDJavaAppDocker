@@ -1,5 +1,6 @@
-FROM openjdk:8-jdk-alpine
+FROM eclipse-temurin:11-jdk
 
+# Set the working directory in the container
 WORKDIR /app
 
 COPY . /app
